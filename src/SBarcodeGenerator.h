@@ -11,6 +11,7 @@
 #include "ByteMatrix.h"
 
 #include "SBarcodeFormat.h"
+#include <QFutureWatcher>
 
 /*!
  * \brief The SBarcodeGenerator class allows you to configure, generate & save barcodes.
@@ -153,10 +154,10 @@ private:
     QString m_filePath  = "";
     QString m_inputText = "";
 
-
+    QFutureWatcher<bool> m_watcher;
     SCodes::SBarcodeFormat m_format = SCodes::SBarcodeFormat::Code128;
 
-    ZXing::Matrix<int> _bitmap = ZXing::Matrix<int>();
+
 
 };
 

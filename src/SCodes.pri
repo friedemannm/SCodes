@@ -1,4 +1,5 @@
-QT += multimedia concurrent
+
+QT += concurrent
 
 android {
     QT += androidextras
@@ -13,9 +14,21 @@ INCLUDEPATH += \
     $$PWD/zxing-cpp/core/src/ \
     $$PWD/zxing-cpp/thirdparty/stb/
 
+DEFINES += RASPBERRY
+! contains(DEFINES, RASPBERRY) {
 HEADERS += \
     $$PWD/SBarcodeDecoder.h \
     $$PWD/SBarcodeFilter.h \
+
+SOURCES += \
+    $$PWD/SBarcodeDecoder.cpp \
+    $$PWD/SBarcodeFilter.cpp \
+
+QT += multimedia
+}
+
+HEADERS += \
+    $$PWD/SBarCodeWorker.h \
     $$PWD/SBarcodeFormat.h \
     $$PWD/SBarcodeGenerator.h \
     $$PWD/qvideoframeconversionhelper_p.h \
@@ -172,8 +185,6 @@ HEADERS += \
     $$PWD/zxing-cpp/core/src/textcodec/KRTextEncoder.h
 
 SOURCES += \
-    $$PWD/SBarcodeDecoder.cpp \
-    $$PWD/SBarcodeFilter.cpp \
     $$PWD/SBarcodeFormat.cpp \
     $$PWD/SBarcodeGenerator.cpp \
     $$PWD/zxing-cpp/core/src/BarcodeFormat.cpp \

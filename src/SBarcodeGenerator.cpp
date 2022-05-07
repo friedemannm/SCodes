@@ -5,13 +5,16 @@
 #endif
 #include "MultiFormatWriter.h"
 #include "TextUtfEncoding.h"
+#include <QtConcurrent>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
 SBarcodeGenerator::SBarcodeGenerator(QQuickItem *parent)
     : QQuickItem(parent)
-{ }
+{
+    connect(&m_watcher, &QFutureWatcher<bool>::finished, [=](){emit generationFinished();});
+}
 
 bool SBarcodeGenerator::generate(const QString &inputString)
 {
@@ -22,24 +25,24 @@ bool SBarcodeGenerator::generate(const QString &inputString)
             ZXing::MultiFormatWriter writer = ZXing::MultiFormatWriter(SCodes::toZXingFormat(m_format)).setMargin(
                 m_margin).setEccLevel(m_eccLevel);
 
-
-            _bitmap =
-              ZXing::ToMatrix<int>(writer.encode(ZXing::TextUtfEncoding::FromUtf8(inputString.toStdString()),
-                m_width, m_height) ,  m_background.rgba(), m_foreground.rgba());
-
             m_filePath = QDir::tempPath() + "/" + m_fileName + "." + m_extension;
 
 
+ QFuture<bool> future = QtConcurrent::run([=](){
+            ZXing::Matrix<int> bitmap = ZXing::ToMatrix<int>(writer.encode(ZXing::TextUtfEncoding::FromUtf8(inputString.toStdString()),
+                m_width, m_height) ,  m_background.rgba(), m_foreground.rgba());
+
             if (m_extension == "png") {
-                stbi_write_png(m_filePath.toStdString().c_str(), _bitmap.width(), _bitmap.height(), 4, _bitmap.data(),
-                   _bitmap.width() * 4);
+                stbi_write_png(m_filePath.toStdString().c_str(), bitmap.width(), bitmap.height(), 4, bitmap.data(),
+                   bitmap.width() * 4);
             } else if (m_extension == "jpg" || m_extension == "jpeg") {
-                stbi_write_jpg(m_filePath.toStdString().c_str(), _bitmap.width(), _bitmap.height(), 4, _bitmap.data(),
-                   _bitmap.width() * 4);
+                stbi_write_jpg(m_filePath.toStdString().c_str(), bitmap.width(), bitmap.height(), 4, bitmap.data(),
+                   bitmap.width() * 4);
 
             }
-
-            emit generationFinished();
+            return true;
+            });
+            m_watcher.setFuture(future);
 
             return true;
         }
