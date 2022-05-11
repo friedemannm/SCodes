@@ -27,10 +27,15 @@ bool SBarcodeGenerator::generate(const QString &inputString)
 
             m_filePath = QDir::tempPath() + "/" + m_fileName + "." + m_extension;
 
-
  QFuture<bool> future = QtConcurrent::run([=](){
+                quint32 foreground =
+                      (m_foreground.green() << 8)
+                    + (m_foreground.blue() << 16)
+                    + (m_foreground.alpha() << 24)
+                    + m_foreground.red();
+
             ZXing::Matrix<int> bitmap = ZXing::ToMatrix<int>(writer.encode(ZXing::TextUtfEncoding::FromUtf8(inputString.toStdString()),
-                m_width, m_height) ,  m_background.rgba(), m_foreground.rgba());
+                m_width, m_height) ,  m_background.rgba(), foreground);
 
             if (m_extension == "png") {
                 stbi_write_png(m_filePath.toStdString().c_str(), bitmap.width(), bitmap.height(), 4, bitmap.data(),
