@@ -1,6 +1,6 @@
 
 QT += concurrent
-
+CONFIG += c++17
 android {
     QT += androidextras
 }
