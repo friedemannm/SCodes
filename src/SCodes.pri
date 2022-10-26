@@ -1,4 +1,5 @@
 
+#DEFINES += RASPBERRY
 QT += concurrent
 
 android {
@@ -14,7 +15,6 @@ INCLUDEPATH += \
     $$PWD/zxing-cpp/core/src/ \
     $$PWD/zxing-cpp/thirdparty/stb/
 
-DEFINES += RASPBERRY
 ! contains(DEFINES, RASPBERRY) {
 HEADERS += \
     $$PWD/SBarcodeDecoder.h \

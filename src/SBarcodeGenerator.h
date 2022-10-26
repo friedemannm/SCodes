@@ -142,7 +142,7 @@ signals:
 private:
 
     QColor m_foreground = "transparent";
-    QColor m_background ="black";
+    QColor m_background = "black";
 
     int m_width    = 500;
     int m_height   = 500;
