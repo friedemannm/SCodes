@@ -69,7 +69,7 @@ void SBarcodeScanner::tryProcessFrame(const QVideoFrame& frame)
     // We can copy QVideoFrame as it's explicitly shared (just like std::shared_ptr)
     // Note the releasing the guard variable
     QMetaObject::invokeMethod(&m_decoder, [=](){
-        m_decoder.process(m_decoder.videoFrameToImage(frame, cRect),SCodes::toZXingFormat(SCodes::SBarcodeFormat::Basic));
+        m_decoder.process(m_decoder.videoFrameToImage(frame, cRect),SCodes::toZXingFormat(SCodes::SBarcodeFormat::QRCode));
         m_frameProcessingInProgress = false;
     });
 }

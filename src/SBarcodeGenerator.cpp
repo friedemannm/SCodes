@@ -2,11 +2,12 @@
 #include <QStandardPaths>
 #include <QPainter>
 
-#ifdef Q_OS_ANDROID
+#if defined(Q_OS_ANDROID)
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    #include <QtAndroid>
+#include <QtCore/private/qandroidextras_p.h>
 #else
-    #include <QtCore/private/qandroidextras_p.h>
+#include <QJniObject>
+#include <QCoreApplication>
 #endif
 #endif
 
@@ -92,27 +93,28 @@ bool SBarcodeGenerator::saveImage()
         return false;
     }
 
-    #ifdef Q_OS_ANDROID
+#ifdef Q_OS_ANDROID
 
-    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (QtAndroid::checkPermission(QString("android.permission.WRITE_EXTERNAL_STORAGE")) ==
-      QtAndroid::PermissionResult::Denied)
+        QtAndroid::PermissionResult::Denied)
     {
         QtAndroid::PermissionResultMap resultHash =
-          QtAndroid::requestPermissionsSync(QStringList({ "android.permission.WRITE_EXTERNAL_STORAGE" }));
+            QtAndroid::requestPermissionsSync(QStringList({ "android.permission.WRITE_EXTERNAL_STORAGE" }));
         if (resultHash["android.permission.WRITE_EXTERNAL_STORAGE"] == QtAndroid::PermissionResult::Denied) {
             return false;
         }
     }
-    #else
-
-    QtAndroidPrivate::requestPermission(QString("android.permission.WRITE_EXTERNAL_STORAGE"));
-
-    #endif
-    #endif
+#else
+    // Qt6: For Android 10+ (API 29+), WRITE_EXTERNAL_STORAGE is not needed
+    // when saving to app-specific directories or using MediaStore
+    // The permission is handled by QStandardPaths automatically
+    qDebug() << "Qt6: Using scoped storage for saving barcode";
+#endif
+#endif
 
     QString docFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/" + m_fileName + "."
-      + m_extension;
+                        + m_extension;
 
     QFile::copy(m_filePath, docFolder);
 

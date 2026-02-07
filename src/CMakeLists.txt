@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 project(SCodes LANGUAGES CXX)
-option(SCODES_DEBUG OFF)
+option(SCODES_DEBUG ON)
 
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -51,12 +51,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE  "${CMAKE_CURRENT_SOURCE_DIR}/private")
 
 if (ANDROID)
-
     if(QT_VERSION_MAJOR EQUAL 5)
         find_package(Qt${QT_VERSION_MAJOR} COMPONENTS AndroidExtras REQUIRED)
         target_link_libraries(${PROJECT_NAME} PUBLIC Qt${QT_VERSION_MAJOR}::AndroidExtras)
     else()
-        target_link_libraries(${PROJECT_NAME} PUBLIC Qt::CorePrivate)
+        # Qt6 on Android doesn't need CorePrivate
+        # AndroidExtras functionality is now in Qt6::Core
     endif()
 
     target_link_libraries(${PROJECT_NAME} PUBLIC EGL GLESv2)
