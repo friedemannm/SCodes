@@ -50,9 +50,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ZXing Qt${QT_VERSION_MAJOR}::Core Q
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE  "${CMAKE_CURRENT_SOURCE_DIR}/private")
 
-target_link_options(${PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
 
 if (ANDROID)
+    target_link_options(${PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
     if(QT_VERSION_MAJOR EQUAL 5)
         find_package(Qt${QT_VERSION_MAJOR} COMPONENTS AndroidExtras REQUIRED)
         target_link_libraries(${PROJECT_NAME} PUBLIC Qt${QT_VERSION_MAJOR}::AndroidExtras)
