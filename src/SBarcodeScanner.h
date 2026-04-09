@@ -6,6 +6,7 @@
 #include <QMediaCaptureSession>
 #include <QRectF>
 #include <QThread>
+#include <atomic>
 
 #include "SBarcodeDecoder.h"
 
@@ -77,7 +78,7 @@ private:
 
     bool m_scanning = true;
     bool m_cameraAvailable = false;
-    bool m_frameProcessingInProgress = false;
+    std::atomic<bool> m_frameProcessingInProgress{false};
 
     QVideoSink* m_forwardVideoSink = nullptr;
 };

@@ -159,8 +159,18 @@ void SBarcodeScanner::tryProcessFrame(const QVideoFrame& frame)
 
 
     // Preprocess in UI thread (fast enough for mobile)
-    QImage preprocessed =
-        preprocessFrame(frame, crop);
+
+    QImage preprocessed;
+    static bool preprocess;
+
+    if(preprocess){
+        preprocessed = preprocessFrame(frame, crop);
+    }
+    else{
+        preprocessed = frame.toImage();
+    }
+
+    preprocess = !preprocess;
 
 
     if (preprocessed.isNull()) {
